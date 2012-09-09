@@ -93,6 +93,7 @@ struct BigUnsigned {
 
 int main() {
     BigUnsigned one, ans = 0;
+
     while (cin >> one) {
         ans += one;
     }
