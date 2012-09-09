@@ -1,0 +1,84 @@
+// UVaOJ 10034
+// Freckles
+// by A Code Rabbit
+
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+using namespace std;
+
+typedef double LEN;
+
+const int MAXV = 102;
+const int MAXE = MAXV * MAXV;
+
+struct Point {
+    double x, y;
+    static LEN GetDistance(Point a, Point b) {
+        return sqrt(pow(a.x - b.x, 2) + pow(a.y - b.y, 2));
+    }
+}; 
+
+struct Edge {
+    int u, v;
+    LEN w;
+};
+ 
+struct Graph{
+    Edge edge[MAXE];
+    int tot_edge;
+    void Init() {
+        tot_edge = 0;
+    }
+    void AddEdge(int u, int v, LEN w) {
+        edge[tot_edge].u = u;
+        edge[tot_edge].v = v;
+        edge[tot_edge].w = w;
+        tot_edge++;
+    }
+};
+
+namespace Kruskal {
+    int p[MAXV];
+    int Cmp(Edge a, Edge b) { return a.w < b.w; }
+    int Find(int x) { return p[x] == x ? x : p[x] = Find(p[x]); }
+    LEN Go(Edge e[MAXE], int n, int m) {
+        for (int i = 0; i < n; i++) p[i] = i;
+        sort(e, e + m, Cmp);
+        LEN ans = 0;
+        for (int i = 0; i < m; i++) {
+            int u = Find(e[i].u); int v = Find(e[i].v);
+            if (u != v) { ans += e[i].w; p[u] = v; }
+        }
+        return ans;
+    }
+}
+
+int n;
+Point point[MAXV];
+Graph graph;
+
+int main() {
+    int tot_case;
+    scanf("%d", &tot_case);
+    for (int t = 0; t < tot_case; t++) {
+        // Input.
+        scanf("%d", &n);
+        for (int i = 0; i < n; i++) {
+            scanf("%lf%lf", &point[i].x, &point[i].y);
+        }
+        // Compete each length of edges.
+        graph.Init();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                LEN w = Point::GetDistance(point[i], point[j]);
+                graph.AddEdge(i, j, w);
+            }
+        }
+        // Output.
+        printf("%s", t ? "\n" : "");
+        printf("%.2lf\n", Kruskal::Go(graph.edge, n, graph.tot_edge));
+    }
+
+    return 0;
+}

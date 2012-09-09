@@ -1,0 +1,122 @@
+// HDOJ 1575
+// Tr A
+// by A Code Rabbit
+
+#include <cstdio>
+#include <cstring>
+
+const int LIMITS = 12;
+const int DIVISOR = 9973;
+
+class Matrix{
+public:
+    Matrix();
+    Matrix(int);
+    void Read();
+    Matrix operator*(Matrix);
+    Matrix operator=(Matrix);
+    Matrix operator%(int);
+    int GetTrace();
+    void Show();
+private:
+    int element[LIMITS][LIMITS];
+    int order;
+};
+
+int t;
+
+int n, k;
+
+
+int main() {
+    scanf("%d", &t);
+    while (t--) {
+        // Inputs.
+        scanf("%d%d", &n, &k);
+        Matrix matrix_one(n);
+        matrix_one.Read();
+        // Quick Power.
+        Matrix matrix_ans(n);
+        while (k) {
+            if (k & 1) {
+                matrix_ans = (matrix_ans * matrix_one) % DIVISOR;
+            }
+            k >>= 1;
+            matrix_one = (matrix_one * matrix_one) % DIVISOR;
+        }
+        // Outputs.
+        printf("%d\n", matrix_ans.GetTrace());
+    }
+
+    return 0;
+}
+
+Matrix::Matrix() {
+}
+
+Matrix::Matrix(int order) {
+    this->order = order;
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            this->element[i][j] = i == j ? 1 : 0;
+        }
+    }
+}
+
+void Matrix::Read() {
+    for (int i = 0; i < this->order; ++i) {
+        for (int j = 0; j < this->order; ++j) {
+            scanf("%d", &this->element[i][j]);
+        }
+    }
+}
+
+Matrix Matrix::operator*(Matrix one) {
+    Matrix result(n);
+    for (int i = 0; i < this->order; ++i) {
+        for (int j = 0; j < this->order; ++j) {
+            int sum = 0;
+            for (int k = 0; k < this->order; ++k) {
+                sum += this->element[i][k] * one.element[k][j];
+            }
+            result.element[i][j] = sum;
+        }
+    }
+    return result;
+}
+
+Matrix Matrix::operator=(Matrix one) {
+    for (int i = 0; i < this->order; ++i) {
+        for (int j = 0; j < this->order; ++j) {
+            this->element[i][j] = one.element[i][j];
+        }
+    }
+    return *this;
+}
+
+Matrix Matrix::operator%(int num) {
+    for (int i = 0; i < this->order; ++i) {
+        for (int j = 0; j < this->order; ++j) {
+            this->element[i][j] %= num;
+        }
+    }
+    return *this;
+}
+
+int Matrix::GetTrace() {
+    int sum = 0;
+    for (int i = 0; i < this->order; ++i) {
+        sum = (sum + this->element[i][i]) % DIVISOR;
+    }
+    return sum;
+}
+
+void Matrix::Show() {
+    printf("matrix:\n");
+    for (int i = 0; i < this->order; ++i) {
+        for (int j = 0; j < this->order; ++j) {
+            printf("%d ", this->element[i][j]);
+        }
+        printf("\n");
+    }
+}
